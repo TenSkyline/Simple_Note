@@ -16,8 +16,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,23 +35,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            var isVisible by remember { mutableStateOf(false) }
             SimpleNoteTheme {
-                // A surface container using the 'background' color from the theme
-                Scaffold(topBar = {
-                    TopAppBar(title = { Text(text = "Simple Note") })
-                }, floatingActionButton = {
-                    FloatingActionButton(onClick = {
-                        viewModel.insertNote()
-                        viewModel.getNotes()
-                    }) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                    }
-                }) {
-                    LazyColumn(modifier = Modifier.padding(it), content = {
-                        items(uiState.notes){note ->
-                            Text(text = "${note.title} ${note.id}")
-                        }
-                    })
+                MainViewContent(uiState) { isVisible = true }
+                if(isVisible){
+
                 }
             }
         }
@@ -57,17 +47,31 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+@OptIn(ExperimentalMaterial3Api::class)
+fun MainViewContent(uiState: MainUiState, onClick: () -> Unit) {
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text(text = "Simple Note") })
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onClick) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            }
+        }
+    ) {
+        LazyColumn(
+            modifier = Modifier.padding(it),
+            content = {
+                items(uiState.notes) { note ->
+                    Text(text = "${note.title} ${note.id}")
+                }
+            }
+        )
+    }
 }
 
-@Preview(showBackground = true)
+
 @Composable
-fun GreetingPreview() {
-    SimpleNoteTheme {
-        Greeting("Android")
-    }
+private fun CreateNoteBottomSheet(){
+     ()
 }

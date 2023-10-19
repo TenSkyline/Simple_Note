@@ -15,6 +15,7 @@ class MainViewModel(private val noteRepository: NoteRepository):ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState())
     fun insertNote()= viewModelScope.launch {
         val note = Note(title = "Catatan", description = "Belajar Kotlin", createdAt = "")
+        noteRepository.insertNote(note)
     }
     fun getNotes()= viewModelScope.launch {
         val notes = noteRepository.getNotes()
